@@ -29,6 +29,7 @@ import docker
 
 DOCKERFILE = os.environ.get('DOCKERFILE', 'Dockerfile')
 DOCKERFILE_BACKUP_FILE = os.environ.get('DOCKERFILE_BACKUP_FILE', '_Dockerfile.buildcachebackup')
+DOCKER_HOST = os.environ.get('DOCKER_HOST', None)
 
 SUCCESS_RE = re.compile(r'.*Successfully built (?P<image_id>[0-9a-f]+)')
 
@@ -85,7 +86,7 @@ class DockerBuildCache(object):
     def clean(self):
         print 'cleaning ...'
 
-        client = docker.Client()
+        client = docker.Client(base_url=DOCKER_HOST)
         images = client.images()
 
         found_hashes = []
@@ -167,7 +168,7 @@ class DockerBuildCache(object):
         sub_dockerfiles = self.get_sub_dockerfiles()
 
         # get a docker client instance to query for images, etc.
-        client = docker.Client()
+        client = docker.Client(base_url=DOCKER_HOST)
 
         print 'getting list of images ...'
         if self.options.skip_cache:
